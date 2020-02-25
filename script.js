@@ -2,46 +2,38 @@ var generateBtn = document.querySelector("#generate");
 var passwordResult = "";
 // create array for lowercase english chars
 var lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-var lowerCaseArray = lowerCaseLetters.split("");
 var upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var upperCaseArray = upperCaseLetters.split("");
 var numbers = "0123456789";
-var numbersArray = numbers.split("");
 var symbols = "!@#$%^&&*()";
-var symbolsArray = symbols.split("");
 var numOfChars;
-
-//Store the character information in seperate variables
-// var lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-// var upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-// var numbers = "0123456789";
-// var symbols = "!@#$%^&&*()";
-// var validCriteria = "";
-
+var possiblePasswordCharacters = "";
+//Get the checkboxes and store them in variables
+var generateLowerCase = document.getElementById("inputLowerCase");
+var generateUpperCase = document.getElementById("inputUpperCase");
+var generateNumbers = document.getElementById("inputNumbers");
+var generateSymbols = document.getElementById("inputSymbols");
 //Check if an input for a character is pressed and if it is add to the validCriteria variable
-function generateValidCharacters() {
-  var generateLowerCase = document.getElementById("inputLowerCase").checked;
-  var generateUpperCase = document.getElementById("inputUpperCase").checked;
-  var generateNumbers = document.getElementById("inputNumbers").checked;
-  var generateSymbols = document.getElementById("inputSpecials").checked;
-
-  if (generateLowerCase) {
-    numOfChars += lowerCaseLetters;
-  } else if (generateUpperCase) {
-    numOfChars += upperCaseLetters;
-  } else if (generateNumbers) {
-    numOfChars += numbers;
-  } else if (generateSymbols) {
-    numOfChars += symbols;
-  } else {
-    alert("Please include at least one type of character.");
+function generateValidCriteria() {
+  if (generateLowerCase.checked) {
+    possiblePasswordCharacters += lowerCaseLetters;
+  }
+  if (generateUpperCase.checked) {
+    possiblePasswordCharacters += upperCaseLetters;
+  }
+  if (generateNumbers.checked) {
+    possiblePasswordCharacters += numbers;
+  }
+  if (generateSymbols.checked) {
+    possiblePasswordCharacters += symbols;
   }
 }
 // generate password
 function generatePassword() {
+  possiblePasswordCharacters = "";
   getPrompts();
-  var pass = buildPassword();
-  return pass;
+  generateValidCriteria();
+  buildPassword();
+  return passwordResult;
 }
 function getPrompts() {
   // get prompts from user
@@ -51,21 +43,31 @@ function getPrompts() {
 function buildPassword() {
   // check for number and proper length of pass
   if (!isNaN(parseInt(numOfChars)) && numOfChars >= 8 && numOfChars <= 128) {
-    for (var i = 0; i < numOfChars; i++) {
+    if (
+      generateLowerCase.checked ||
+      generateUpperCase.checked ||
+      generateNumbers.checked ||
+      generateSymbols.checked
+    ) {
       // TO-DO: check for user password preference
-      addCharFromArray(generateValidCharacters);
+      possiblePasswordCharacters.split("");
+      addCharFromArray(numOfChars);
+    } else {
+      alert("Error, please define password criteria.");
     }
   }
-  return passwordResult;
 }
+
 // add char from array func
-function addCharFromArray(arr) {
+function addCharFromArray(length) {
   // build pass
-  passwordResult += getRandomFromArray(lowerCaseArray);
+  for (var i = 0; i < length; i++) {
+    passwordResult += getRandomFromArray(possiblePasswordCharacters);
+  }
 }
 // utility func to get a random element from array
 function getRandomFromArray(arr) {
-  return arr[parseInt(Math.random() * arr.length)];
+  return arr[parseInt(Math.floor(Math.random() * arr.length))];
 }
 // Write password to the #password input
 function writePassword() {
